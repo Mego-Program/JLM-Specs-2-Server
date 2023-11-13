@@ -1,28 +1,43 @@
 const exampleData = [
     {
-        title: "Recipe 1",
-        date: new Date("2023-11-07"),
-        description: "Healthy breakfast",
-        content: "Content 1",
-        owner: 123,
-        users: ["user1", "user2"]
+      title: "Project A",
+      description: "A software development project",
+      startDate: new Date("2023-01-01"),
+      endDate: new Date("2023-02-28"),
+      task: ["Design", "Coding", "Testing"],
+      team: ["John", "Jane", "Bob"]
     },
     {
-        title: "Exercise 1",
-        date: new Date("2023-11-08"),
-        description: "Workout routine",
-        content: "Content 2",
-        owner: 456,
-        users: ["user3", "user4", "user5"]
+      title: "Event Planning",
+      description: "Organizing a community event",
+      startDate: new Date("2023-03-15"),
+      endDate: new Date("2023-04-15"),
+      task: ["Venue booking", "Logistics", "Promotion"],
+      team: ["Alice", "Charlie", "David"]
     },
-    // ... (Add more objects following the same pattern)
     {
-        title: "Recipe 6",
-        date: new Date("2023-10-20"),
-        description: "Mediterranean dish",
-        content: "Content 20",
-        owner: 411,
-        users: ["user46", "user47"]
+      title: "Fitness Challenge",
+      description: "Encouraging healthy habits",
+      startDate: new Date("2023-05-01"),
+      endDate: new Date("2023-06-30"),
+      task: ["Workouts", "Nutrition", "Tracking"],
+      team: ["Emma", "Frank", "Grace"]
+    },
+    {
+      title: "Cooking Class",
+      description: "Learning new recipes",
+      startDate: new Date("2023-07-10"),
+      endDate: new Date("2023-08-10"),
+      task: ["Recipe selection", "Cooking sessions", "Tasting"],
+      team: ["Hank", "Ivy", "Jack"]
+    },
+    {
+      title: "Relationship Workshop",
+      description: "Building strong connections",
+      startDate: new Date("2023-09-15"),
+      endDate: new Date("2023-10-15"),
+      task: ["Communication exercises", "Trust-building activities", "Reflection"],
+      team: ["Kelly", "Liam", "Mia"]
     }
   ];
 

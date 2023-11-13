@@ -20,8 +20,8 @@ let DataSpecSchema = new mongoose.Schema({
     team: [String]
     })
 
-const specsData = mongoose.model("SpecsData", DataSpecSchema)
+const specsScheme = mongoose.model("SpecsData", DataSpecSchema)
 
-export default specsData
+export default specsScheme
 
 
