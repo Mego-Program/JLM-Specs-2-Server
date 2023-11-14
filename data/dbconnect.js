@@ -1,26 +1,23 @@
-import specsData from '../data/specsData.js'
+import specsScheme from './specsScheme.js'
 import exampleData from './exampleData.js'
 
-export async function SaveUser() {
+export async function createSpec() {
     try { 
-    const check = await specsData.create(exampleData)
-    console.log(check)
+    const createNowSpec = await specsScheme.create(exampleData[0])
+    console.log(createNowSpec)
 } 
 catch (err) {
     console.log(err.message)
 }
 }
-// SaveUser()
 
-export async function PullData() {
+
+export async function findSpec() {
     try { 
-    const checkOneSpec = await specsData.find({title: "Recipe 6"})
-    console.log(checkOneSpec)
+    const findOneSpec = await specsScheme.find({})
+    console.log(findOneSpec)
 } 
 catch (err) {
     console.log(err.message)
 }
 }
-// PullData()
-
-// export default [SaveUser, PullData]
