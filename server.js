@@ -60,6 +60,15 @@ app.get('/specs/findByQuery', async (req, res) => {
         res.status(500).json({message: error.message})
     }
 })
+// get some data based on queries that you have - all the objects, but only one value from the schemes: 
+app.get('/specs/findByValue', async (req, res) => {
+    try {
+        const specs = await specsScheme.find({}, 'title')
+        res.json(specs)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
 // remove spec by specific ID and read the spec in the console:
 app.get('/specs/removeSpec', async (req, res) => {
     try {
@@ -77,6 +86,24 @@ app.get('/specs/editSpec', async (req, res) => {
         console.log(editSpec)
     } catch (error) {
         res.status(500).json({message: error.message})
+    }
+})
+// adding spec by post command:
+app.post('/specs/addSpec', async (req, res) => {
+    let addSpecs = new specsScheme({
+        title: req.body.title,
+        description: req.body.description,
+        startDate: req.body.startDate, 
+        endDate: req.body.endDate,
+        task: req.body.task,
+        team: req.body.team
+    })
+    try {
+        let newSpec = await specsScheme.save()
+        res.status(201).json(newSpec)
+        console.log(newSpec)
+    } catch (error) {
+        res.status(400).json({message: error.message})
     }
 })
 
