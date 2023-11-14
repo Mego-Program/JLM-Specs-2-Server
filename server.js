@@ -4,14 +4,15 @@ import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
 import {findSpec, createSpec} from './data/dbconnect.js'
 import { ObjectId } from 'mongodb'
-
+import cors from 'cors'
 
 // ===========================================
 // create server with port plus route to specs
 
 let app = express()
 const port = 4000
-
+app.use(cors())
+app.options('*')
 
 // app.use('/specs', specRoute)
 
@@ -45,7 +46,7 @@ app.get('/specs/first', async (req, res) => {
 // get the specific element from the data-base:
 app.get('/specs/id', async (req, res) => {
     try {
-        const specID = await specsScheme.findById(new ObjectId('********************'))
+        const specID = await specsScheme.findById(new ObjectId('**********'))
         res.json(specID)
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -63,7 +64,7 @@ app.get('/specs/findByQuery', async (req, res) => {
 // get some data based on queries that you have - all the objects, but only one value from the schemes: 
 app.get('/specs/findByValue', async (req, res) => {
     try {
-        const specs = await specsScheme.find({}, 'title')
+        const specs = await specsScheme.find({}, 'description')
         res.json(specs)
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -72,7 +73,7 @@ app.get('/specs/findByValue', async (req, res) => {
 // remove spec by specific ID and read the spec in the console:
 app.get('/specs/removeSpec', async (req, res) => {
     try {
-        const deleteSpec = await specsScheme.findByIdAndDelete(new ObjectId('655250b66d77b07dc6609fb2'))
+        const deleteSpec = await specsScheme.findByIdAndDelete(new ObjectId('655250b66d77b07dc6609fb1'))
         console.log(deleteSpec)
     } catch (error) {
         res.status(500).json({message: error.message})
