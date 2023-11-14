@@ -11,7 +11,6 @@ catch (err) {
 }
 }
 
-
 export async function findSpec() {
     try { 
     const findOneSpec = await specsScheme.find({})

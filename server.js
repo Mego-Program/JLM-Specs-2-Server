@@ -44,9 +44,9 @@ app.get('/specs/first', async (req, res) => {
     }
 })
 // get the specific element from the data-base:
-app.get('/specs/id', async (req, res) => {
+app.get('/specs/:id', async (req, res) => {
     try {
-        const specID = await specsScheme.findById(new ObjectId('**********'))
+        const specID = await specsScheme.findById(req.params.id)
         res.json(specID)
     } catch (error) {
         res.status(500).json({message: error.message})
@@ -64,7 +64,7 @@ app.get('/specs/findByQuery', async (req, res) => {
 // get some data based on queries that you have - all the objects, but only one value from the schemes: 
 app.get('/specs/findByValue', async (req, res) => {
     try {
-        const specs = await specsScheme.find({}, 'description')
+        const specs = await specsScheme.find({}, 'title description')
         res.json(specs)
     } catch (error) {
         res.status(500).json({message: error.message})
