@@ -25,28 +25,35 @@ db.once('open', () => console.log('connected to the database'))
 app.use(express.json())
 
 
-// get some data based on queries that you have - all the objects, but only one value from the schemes: 
+// get all the data from the data-base: 
 app.get('/specs', async (req, res) => {
     try {
-        const specs = await specsScheme.find({}, 'title description')
+        const specs = await specsScheme.find()
         res.json(specs)
     } catch (error) {
         res.status(500).json({message: error.message})
     }
 })
-
-// get the specific element from the data-base:
-app.get('/specs/:id', async (req, res) => {
+// get the first element from the data-base - randomlly, not so use:
+app.get('/specs/first', async (req, res) => {
     try {
-        const specID = await specsScheme.findById(req.params.id)
+        const specFirst = await specsScheme.findOne()
+        res.json(specFirst)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
+// get the specific element from the data-base:
+app.get('/specs/id', async (req, res) => {
+    try {
+        const specID = await specsScheme.findById(new ObjectId('**********'))
         res.json(specID)
     } catch (error) {
         res.status(500).json({message: error.message})
     }
 })
-
 // get some data based on queries that you have: 
-app.get('/specs/query', async (req, res) => {
+app.get('/specs/findByQuery', async (req, res) => {
     try {
         const specs = await specsScheme.find({description: 'Building strong connections'})
         res.json(specs)
@@ -54,20 +61,28 @@ app.get('/specs/query', async (req, res) => {
         res.status(500).json({message: error.message})
     }
 })
-
-// remove spec by specific ID and read the spec in the console:
-app.get('/specs/removeSpec/:id', async (req, res) => {
+// get some data based on queries that you have - all the objects, but only one value from the schemes: 
+app.get('/specs/findByValue', async (req, res) => {
     try {
-        const deleteSpec = await specsScheme.findByIdAndDelete((req.params.id))
+        const specs = await specsScheme.find({}, 'description')
+        res.json(specs)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+})
+// remove spec by specific ID and read the spec in the console:
+app.get('/specs/removeSpec', async (req, res) => {
+    try {
+        const deleteSpec = await specsScheme.findByIdAndDelete(new ObjectId('655250b66d77b07dc6609fb1'))
         console.log(deleteSpec)
     } catch (error) {
         res.status(500).json({message: error.message})
     }
 })
 // update spec by specific ID and read the spec in the console:
-app.get('/specs/editSpec/:id', async (req, res) => {
+app.get('/specs/editSpec', async (req, res) => {
     try {
-        const editSpec = await specsScheme.findByIdAndUpdate((req.params.id), {title: 'refael cohen update this title'})
+        const editSpec = await specsScheme.findByIdAndUpdate(new ObjectId('65525125c33a9c3526f5d773'), {title: 'refael cohen update this title'})
         res.json(editSpec)
         console.log(editSpec)
     } catch (error) {
@@ -85,33 +100,13 @@ app.post('/specs/addSpec', async (req, res) => {
         team: req.body.team
     })
     try {
-        let newSpec = await specsScheme.save(addSpecs)
+        let newSpec = await specsScheme.save()
         res.status(201).json(newSpec)
         console.log(newSpec)
     } catch (error) {
         res.status(400).json({message: error.message})
     }
 })
-
-
-// app.post('/specs/addSpec', async (req, res) => {
-//     let addSpecs = {
-//         title: req.body.title,
-//         description: req.body.description,
-//         startDate: req.body.startDate, 
-//         endDate: req.body.endDate,
-//         task: req.body.task,
-//         team: req.body.team
-//     }
-//     try {
-//         db.collection().insertOne(addSpecs, async function(err, res) {
-//         let newSpec = await specsScheme.save(addSpecs)
-//         res.status(201).json(newSpec)
-//         console.log(newSpec)}) 
-//     } catch (error) {
-//         res.status(400).json({message: error.message})
-//     }
-// })
 
 
 // =================================================================
