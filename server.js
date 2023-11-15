@@ -109,14 +109,36 @@ app.post('/specs/addSpec', async (req, res) => {
     }
 })
 
+// app.put('/spec/:id', async (req, res) => {
+//     try {
+//       const updatedSpec = await specsScheme.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//       res.json(updatedSpec);
+//     } catch (error) {
+//       res.status(500).json({ message: error.message });
+//     }
+//   });
 app.put('/spec/:id', async (req, res) => {
     try {
       const updatedSpec = await specsScheme.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      res.json(updatedSpec);
+      
+      const savedSpec = await updatedSpec.save();
+  
+      res.json(savedSpec);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
+
+  app.delete('/specs/removeSpec/:id', async (req, res) => {
+    try {
+      const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
+      res.json(deleteSpec);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  
 
 
 // =================================================================
