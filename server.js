@@ -5,22 +5,39 @@ import specsScheme from './data/specsScheme.js'
 import {findSpec, createSpec} from './data/dbconnect.js'
 import { ObjectId } from 'mongodb'
 import cors from 'cors'
+import compression from 'compression'
+import helmet from 'helmet'
+import bunyan from 'bunyan'
+import cluster from 'cluster'
+import http from 'http'
+import dotenv from 'dotenv'
+import { normalize } from 'path'
+dotenv.config()
 
-// ===========================================
-// create server with port plus route to specs
-
-let app = express()
-const port = 4000
+const app = express()
 app.use(cors())
 app.options('*')
+app.use(compression())
+app.use(helmet());
+const server = http.createServer(app)
+const port = normalize(process.env.PORT)
+
+const loggers = {
+    development: () => bunyan.createLogger({name: "development", level: "debug"}), 
+    production: () => bunyan.createLogger({name: "production", level: "info"}), 
+    test: () => bunyan.createLogger({name: "test", level: "fatal"})
+}
 
 // app.use('/specs', specRoute)
 
+const mongoDBCode = process.env.MONGO_DB_URI
+mongoose.connect(mongoDBCode)
+const connentMongo = mongoose.connection
+connentMongo.on('error', (error) => console.log(error))
+connentMongo.once('open', () => console.log('connected to the database'))
 
-mongoose.connect('mongodb+srv://refaelcohen98:refael148@cluster0.lkzzbpr.mongodb.net/')
-const db = mongoose.connection
-db.on('error', (error) => console.log(error))
-db.once('open', () => console.log('connected to the database'))
+
+
 
 app.use(express.json())
 
@@ -71,18 +88,18 @@ app.get('/specs/findByValue', async (req, res) => {
     }
 })
 // remove spec by specific ID and read the spec in the console:
-app.get('/specs/removeSpec', async (req, res) => {
+app.get('/specs/removeSpec/:id', async (req, res) => {
     try {
-        const deleteSpec = await specsScheme.findByIdAndDelete(new ObjectId('655250b66d77b07dc6609fb1'))
+        const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id)
         console.log(deleteSpec)
     } catch (error) {
         res.status(500).json({message: error.message})
     }
 })
 // update spec by specific ID and read the spec in the console:
-app.get('/specs/editSpec', async (req, res) => {
+app.get('/specs/editSpec/:id', async (req, res) => {
     try {
-        const editSpec = await specsScheme.findByIdAndUpdate(new ObjectId('65525125c33a9c3526f5d773'), {title: 'refael cohen update this title'})
+        const editSpec = await specsScheme.findByIdAndUpdate((req.params.id), {title: 'shragi feldhaim hes the father of israel'})
         res.json(editSpec)
         console.log(editSpec)
     } catch (error) {
@@ -109,7 +126,7 @@ app.post('/specs/addSpec', async (req, res) => {
     }
 })
 
-
+// createSpec()
 // =================================================================
 
 // functions from dbconncet that we need for the buildind of the db:
@@ -117,5 +134,5 @@ app.post('/specs/addSpec', async (req, res) => {
 
 app.listen(port, (err) => {
     if (err) console.log(err);
-    console.log("Server listening on PORT", port);
+    console.log("Server listening");
 });
