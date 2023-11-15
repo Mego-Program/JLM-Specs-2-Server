@@ -109,6 +109,15 @@ app.post('/specs/addSpec', async (req, res) => {
     }
 })
 
+app.put('/spec/:id', async (req, res) => {
+    try {
+      const updatedSpec = await specsScheme.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      res.json(updatedSpec);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
 
 // =================================================================
 
