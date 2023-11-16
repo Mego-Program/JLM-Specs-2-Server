@@ -1,29 +1,44 @@
 import express, { json } from "express";
 // import specRoute from './routes/specs.js'
-import mongoose from "mongoose";
-import specsScheme from "./data/specsScheme.js";
-import { findSpec, createSpec } from "./data/dbconnect.js";
-import { ObjectId } from "mongodb";
-import cors from "cors";
 
-// ===========================================
-// create server with port plus route to specs
+import mongoose from 'mongoose'
+import specsScheme from './data/specsScheme.js'
+import {findSpec, createSpec} from './data/dbconnect.js'
+import { ObjectId } from 'mongodb'
+import cors from 'cors'
+import compression from 'compression'
+import helmet from 'helmet'
+import bunyan from 'bunyan'
+import cluster from 'cluster'
+import http from 'http'
+import dotenv from 'dotenv'
+import { normalize } from 'path'
+dotenv.config()
 
-let app = express();
-const port = 4000;
-app.use(cors());
-app.options("*");
+const app = express()
+app.use(cors())
+app.options('*')
+app.use(compression())
+app.use(helmet());
+const server = http.createServer(app)
+const port = normalize(process.env.PORT)
+
+const loggers = {
+    development: () => bunyan.createLogger({name: "development", level: "debug"}), 
+    production: () => bunyan.createLogger({name: "production", level: "info"}), 
+    test: () => bunyan.createLogger({name: "test", level: "fatal"})
+}
 
 // app.use('/specs', specRoute)
 
-mongoose.connect(
-  "mongodb+srv://refaelcohen98:refael148@cluster0.lkzzbpr.mongodb.net/"
-);
-const db = mongoose.connection;
-db.on("error", (error) => console.log(error));
-db.once("open", () => console.log("connected to the database"));
+const mongoDBCode = process.env.MONGO_DB_URI
+mongoose.connect(mongoDBCode)
+const connentMongo = mongoose.connection
+connentMongo.on('error', (error) => console.log(error))
+connentMongo.once('open', () => console.log('connected to the database'))
 
-app.use(express.json());
+
+
 
 // get all the data from the data-base:
 // app.get('/specs', async (req, res) => {
@@ -117,12 +132,13 @@ app.post("/Specs", async (req, res) => {
   }
 });
 
+
 // =================================================================
 
 // functions from dbconncet that we need for the buildind of the db:
 // createSpec()
 
 app.listen(port, (err) => {
-  if (err) console.log(err);
-  console.log("Server listening on PORT", port);
+    if (err) console.log(err);
+    console.log("Server listening");
 });
