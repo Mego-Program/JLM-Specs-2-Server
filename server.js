@@ -1,113 +1,136 @@
-import express, { json } from 'express'
+import express, { json } from "express";
 // import specRoute from './routes/specs.js'
+
 import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
 import {findSpec, createSpec} from './data/dbconnect.js'
 import { ObjectId } from 'mongodb'
 import cors from 'cors'
+import compression from 'compression'
+import helmet from 'helmet'
+import bunyan from 'bunyan'
+import cluster from 'cluster'
+import http from 'http'
+import dotenv from 'dotenv'
+import { normalize } from 'path'
+dotenv.config()
 
-// ===========================================
-// create server with port plus route to specs
-
-let app = express()
-const port = 4000
+const app = express()
 app.use(cors())
 app.options('*')
+app.use(compression())
+app.use(helmet());
+const server = http.createServer(app)
+const port = normalize(process.env.PORT)
+
+const loggers = {
+    development: () => bunyan.createLogger({name: "development", level: "debug"}), 
+    production: () => bunyan.createLogger({name: "production", level: "info"}), 
+    test: () => bunyan.createLogger({name: "test", level: "fatal"})
+}
 
 // app.use('/specs', specRoute)
 
-
-mongoose.connect('mongodb+srv://refaelcohen98:refael148@cluster0.lkzzbpr.mongodb.net/')
-const db = mongoose.connection
-db.on('error', (error) => console.log(error))
-db.once('open', () => console.log('connected to the database'))
-
-app.use(express.json())
+const mongoDBCode = process.env.MONGO_DB_URI
+mongoose.connect(mongoDBCode)
+const connentMongo = mongoose.connection
+connentMongo.on('error', (error) => console.log(error))
+connentMongo.once('open', () => console.log('connected to the database'))
 
 
-// get all the data from the data-base: 
-app.get('/specs', async (req, res) => {
-    try {
-        const specs = await specsScheme.find()
-        res.json(specs)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
+
+
+// get all the data from the data-base:
+// app.get('/specs', async (req, res) => {
+//   try {
+//       const specs = await specsScheme.findOne({}, {}, { sort: { 'created_at' : -1 } }, function(err, post) {
+//           console.log(specs);
+// });
+//       res.json(specs)
+//   } catch (error) {
+//       res.status(500).json({message: error.message})
+//     }
+// })
+
+
 // get the first element from the data-base - randomlly, not so use:
-app.get('/specs/first', async (req, res) => {
-    try {
-        const specFirst = await specsScheme.findOne()
-        res.json(specFirst)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
+// app.get("/specs/first", async (req, res) => {
+//   try {
+//     const specFirst = await specsScheme.findOne();
+//     res.json(specFirst);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 // get the specific element from the data-base:
-app.get('/spec/:id', async (req, res) => {
-    try {
-        const specID = await specsScheme.findById(req.params.id)
-        res.json(specID)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
-// get some data based on queries that you have: 
-app.get('/specs/findByQuery', async (req, res) => {
-    try {
-        const specs = await specsScheme.find({description: 'Building strong connections'})
-        res.json(specs)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
-// get some data based on queries that you have - all the objects, but only one value from the schemes: 
-app.get('/specs/findByValue', async (req, res) => {
-    try {
-        const specs = await specsScheme.find({}, 'title description')
-        res.json(specs)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
+app.get("/spec/:id", async (req, res) => {
+  try {
+    const specID = await specsScheme.findById(req.params.id);
+    res.json(specID);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+// get some data based on queries that you have:
+// app.get("/specs/findByQuery", async (req, res) => {
+//   try {
+//     const specs = await specsScheme.find({
+//       description: "Building strong connections",
+//     });
+//     res.json(specs);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+// get some data based on queries that you have - all the objects, but only one value from the schemes:
+app.get("/specs", async (req, res) => {
+  try {
+    const specs = await specsScheme.find({}, "title description");
+    res.json(specs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 // remove spec by specific ID and read the spec in the console:
-app.get('/specs/removeSpec', async (req, res) => {
-    try {
-        const deleteSpec = await specsScheme.findByIdAndDelete(new ObjectId('655250b66d77b07dc6609fb1'))
-        console.log(deleteSpec)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
+app.delete("/Specs/:id", async (req, res) => {
+  try {
+    const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
+    console.log(deleteSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 // update spec by specific ID and read the spec in the console:
-app.get('/specs/editSpec', async (req, res) => {
-    try {
-        const editSpec = await specsScheme.findByIdAndUpdate(new ObjectId('65525125c33a9c3526f5d773'), {title: 'refael cohen update this title'})
-        res.json(editSpec)
-        console.log(editSpec)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-})
+app.put("/specs/:id", async (req, res) => {
+  try {
+    const editSpec = await specsScheme.findByIdAndUpdate(
+      req.params.id,
+      req.body
+    );
+    res.json(editSpec);
+    console.log(editSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 // adding spec by post command:
-app.post('/specs/addSpec', async (req, res) => {
-    console.log(req.body);
+app.post("/Specs", async (req, res) => {
+  try {
     let addSpecs = new specsScheme({
-        title: req.body.title,
-        description: req.body.description,
-        startDate: req.body.startDate, 
-        endDate: req.body.endDate,
-        task: req.body.task,
-        team: req.body.team
-    })
-    try {
-        let newSpec = await specsScheme.save()
-        res.status(201).json(newSpec)
-        console.log(newSpec)
-    } catch (error) {
-        res.status(400).json({message: error.message})
-    }
-})
+      title: req.body.title,
+      description: req.body.description,
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
+      task: req.body.task,
+      team: req.body.team,
+    });
+    let newSpec = await addSpecs.save();
+    res.status(201).json(newSpec);
+    console.log(newSpec);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
 
 // app.put('/spec/:id', async (req, res) => {
 //     try {
@@ -148,5 +171,5 @@ app.put('/spec/:id', async (req, res) => {
 
 app.listen(port, (err) => {
     if (err) console.log(err);
-    console.log("Server listening on PORT", port);
+    console.log("Server listening");
 });
