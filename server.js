@@ -20,7 +20,7 @@ app.options('*')
 app.use(compression())
 app.use(helmet());
 const server = http.createServer(app)
-const port = normalize(process.env.PORT)
+const port = process.env.PORT
 
 const loggers = {
     development: () => bunyan.createLogger({name: "development", level: "debug"}), 
