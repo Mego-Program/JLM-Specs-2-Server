@@ -16,7 +16,7 @@ let DataSpecSchema = new mongoose.Schema({
     description: String,
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
-    task: [String],
+    task: [Object],
     team: [String]
     })
 
