@@ -1,33 +1,39 @@
 import express, { json } from "express";
 // import specRoute from './routes/specs.js'
+import bodyParser from 'body-parser';
+
 
 import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
-import {findSpec, createSpec} from './data/dbconnect.js'
-import { ObjectId } from 'mongodb'
+// import {findSpec, createSpec} from './data/dbconnect.js'
+// import { ObjectId } from 'mongodb'
 import cors from 'cors'
-import compression from 'compression'
-import helmet from 'helmet'
-import bunyan from 'bunyan'
-import cluster from 'cluster'
-import http from 'http'
+// import compression from 'compression'
+// import helmet from 'helmet'
+// import bunyan from 'bunyan'
+// import cluster from 'cluster'
+// import http from 'http'
 import dotenv from 'dotenv'
-import { normalize } from 'path'
+// import { normalize } from 'path'
 dotenv.config()
 
 const app = express()
 app.use(cors())
 app.options('*')
-app.use(compression())
-app.use(helmet());
-const server = http.createServer(app)
-const port = normalize(process.env.PORT)
 
-const loggers = {
-    development: () => bunyan.createLogger({name: "development", level: "debug"}), 
-    production: () => bunyan.createLogger({name: "production", level: "info"}), 
-    test: () => bunyan.createLogger({name: "test", level: "fatal"})
-}
+app.use(bodyParser.json())
+
+// app.use(compression())
+// app.use(helmet());
+// const server = http.createServer(app)
+// const port = normalize(process.env.PORT)
+const port = 4000
+
+// const loggers = {
+//     development: () => bunyan.createLogger({name: "development", level: "debug"}), 
+//     production: () => bunyan.createLogger({name: "production", level: "info"}), 
+//     test: () => bunyan.createLogger({name: "test", level: "fatal"})
+// }
 
 // app.use('/specs', specRoute)
 
@@ -103,6 +109,7 @@ app.delete("/Specs/:id", async (req, res) => {
 // update spec by specific ID and read the spec in the console:
 app.put("/specs/:id", async (req, res) => {
   try {
+    console.log(req.body);
     const editSpec = await specsScheme.findByIdAndUpdate(
       req.params.id,
       req.body
@@ -113,9 +120,11 @@ app.put("/specs/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 // adding spec by post command:
-app.post("/Specs", async (req, res) => {
+app.post("/specs", async (req, res) => {
   try {
+    console.log('enter server');
     let addSpecs = new specsScheme({
       title: req.body.title,
       description: req.body.description,
@@ -124,7 +133,9 @@ app.post("/Specs", async (req, res) => {
       task: req.body.task,
       team: req.body.team,
     });
+    console.log('item good');
     let newSpec = await addSpecs.save();
+    console.log('save');
     res.status(201).json(newSpec);
     console.log(newSpec);
   } catch (error) {
