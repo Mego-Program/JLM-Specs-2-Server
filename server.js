@@ -1,7 +1,11 @@
-import express from "express";
+import express from 'express'
 import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
 import cors from 'cors'
+import compression from 'compression'
+import helmet from 'helmet'
+import bunyan from 'bunyan'
+import http from 'http'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -9,6 +13,8 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.options('*')
+app.use(compression())
+app.use(helmet());
 app.use(express.json())
 const port = process.env.PORT
 

@@ -14,6 +14,7 @@ import mongoose from 'mongoose'
 let DataSpecSchema = new mongoose.Schema({
     title: {type: String, required: true},
     description: String,
+    date: {type: Date, required: Date.now()},
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
     task: [Object],
