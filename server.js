@@ -1,17 +1,12 @@
-import express, { json } from 'express'
-// import specRoute from './routes/specs.js'
+import express from 'express'
 import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
-import {findSpec, createSpec} from './data/dbconnect.js'
-import { ObjectId } from 'mongodb'
 import cors from 'cors'
 import compression from 'compression'
 import helmet from 'helmet'
 import bunyan from 'bunyan'
-import cluster from 'cluster'
 import http from 'http'
 import dotenv from 'dotenv'
-import { normalize } from 'path'
 dotenv.config()
 
 const app = express()
@@ -19,16 +14,7 @@ app.use(cors())
 app.options('*')
 app.use(compression())
 app.use(helmet());
-const server = http.createServer(app)
 const port = process.env.PORT
-
-const loggers = {
-    development: () => bunyan.createLogger({name: "development", level: "debug"}), 
-    production: () => bunyan.createLogger({name: "production", level: "info"}), 
-    test: () => bunyan.createLogger({name: "test", level: "fatal"})
-}
-
-// app.use('/specs', specRoute)
 
 const mongoDBCode = process.env.MONGO_DB_URI
 mongoose.connect(mongoDBCode)
