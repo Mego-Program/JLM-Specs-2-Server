@@ -1,5 +1,4 @@
 import express, { json } from "express";
-import bodyParser from 'body-parser';
 
 
 import mongoose from 'mongoose'
@@ -11,7 +10,7 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.options('*')
-app.use(bodyParser.json())
+app.use(express.json())
 const port = process.env.PORT
 
 const mongoDBCode = process.env.MONGO_DB_URI
