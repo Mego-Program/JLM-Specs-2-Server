@@ -11,15 +11,19 @@ import mongoose from 'mongoose'
 // owner: ObjectId
 // })
 
+
+
 let DataSpecSchema = new mongoose.Schema({
     title: {type: String, required: true},
     description: String,
-    date: {type: Date, required: Date.now()},
+    date: {type: Date, default: Date().toLocaleString({timeZone: 'Asia/Jerusalem'})},
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
     task: [Object],
     team: [String]
     })
+
+    // check how to change the hour to Jerusalem-time 
 
 const specsScheme = mongoose.model("Specs", DataSpecSchema, "Specs")
 
