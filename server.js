@@ -1,17 +1,15 @@
-import express, { json } from "express";
-import bodyParser from 'body-parser';
-
-
+import express from "express";
 import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
 import cors from 'cors'
 import dotenv from 'dotenv'
+
 dotenv.config()
 
 const app = express()
 app.use(cors())
 app.options('*')
-app.use(bodyParser.json())
+app.use(express.json())
 const port = process.env.PORT
 
 const mongoDBCode = process.env.MONGO_DB_URI
@@ -20,7 +18,7 @@ const connentMongo = mongoose.connection
 connentMongo.on('error', (error) => console.log(error))
 connentMongo.once('open', () => console.log('connected to the database'))
 
-
+// get data of single spec by id
 app.get("/spec/:id", async (req, res) => {
   try {
     const specID = await specsScheme.findById(req.params.id);
@@ -89,9 +87,6 @@ app.post("/specs", async (req, res) => {
 
 
 // =================================================================
-
-// functions from dbconncet that we need for the buildind of the db:
-// createSpec()
 
 app.listen(port, (err) => {
     if (err) console.log(err);
