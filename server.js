@@ -1,17 +1,21 @@
-import express, { json } from "express";
-import bodyParser from 'body-parser';
-
-
+import express from 'express'
 import mongoose from 'mongoose'
 import specsScheme from './data/specsScheme.js'
 import cors from 'cors'
+import compression from 'compression'
+import helmet from 'helmet'
+// import bunyan from 'bunyan'
+// import http from 'http'
 import dotenv from 'dotenv'
+
 dotenv.config()
 
 const app = express()
 app.use(cors())
 app.options('*')
-app.use(bodyParser.json())
+app.use(compression())
+app.use(helmet());
+app.use(express.json())
 const port = process.env.PORT
 
 const mongoDBCode = process.env.MONGO_DB_URI
@@ -20,8 +24,18 @@ const connentMongo = mongoose.connection
 connentMongo.on('error', (error) => console.log(error))
 connentMongo.once('open', () => console.log('connected to the database'))
 
+// get some data based on queries that you have - all the objects, but only one value from the schemes:
+app.get("/specs", async (req, res) => {
+    try {
+      const specs = await specsScheme.find({}, "title description date");
+      res.json(specs);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
-app.get("/spec/:id", async (req, res) => {
+// get data of single spec by id
+app.get("/specs/:id", async (req, res) => {
   try {
     const specID = await specsScheme.findById(req.params.id);
     res.json(specID);
@@ -30,15 +44,7 @@ app.get("/spec/:id", async (req, res) => {
   }
 });
 
-// get some data based on queries that you have - all the objects, but only one value from the schemes:
-app.get("/specs", async (req, res) => {
-  try {
-    const specs = await specsScheme.find({}, "title description startDate");
-    res.json(specs);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+
 
 // remove spec by specific ID and read the spec in the console:
 app.delete("/specs/:id", async (req, res) => {
@@ -77,16 +83,13 @@ app.post("/specs", async (req, res) => {
       task: req.body.task,
       team: req.body.team,
     });
-    console.log('item good');
     let newSpec = await addSpecs.save();
-    console.log('save');
     res.status(201).json(newSpec);
-    console.log(newSpec);
+    console.log('spec added: ',newSpec);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
-
 // app.put('/spec/:id', async (req, res) => {
 //     try {
 //       const updatedSpec = await specsScheme.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -120,9 +123,6 @@ app.put('/spec/:id', async (req, res) => {
 
 
 // =================================================================
-
-// functions from dbconncet that we need for the buildind of the db:
-// createSpec()
 
 app.listen(port, (err) => {
     if (err) console.log(err);
