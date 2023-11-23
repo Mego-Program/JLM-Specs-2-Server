@@ -20,8 +20,14 @@ let DataSpecSchema = new mongoose.Schema({
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
     task: [Object],
-    team: [String]
-    })
+    team: [String],
+    comments: [
+        {
+          author: String,
+          content: String,
+        },
+      ],
+    });
 
     // check how to change the hour to Jerusalem-time 
 

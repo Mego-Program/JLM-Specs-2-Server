@@ -27,7 +27,7 @@ connentMongo.once('open', () => console.log('connected to the database'))
 // get some data based on queries that you have - all the objects, but only one value from the schemes:
 app.get("/specs", async (req, res) => {
     try {
-      const specs = await specsScheme.find({}, "title description date");
+      const specs = await specsScheme.find({}, "title description date comments");
       res.json(specs);
     } catch (error) {
       res.status(500).json({ message: error.message });
@@ -43,6 +43,26 @@ app.get("/specs/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+app.post("/specs/:id/comments", async (req, res) => {
+  try {
+    const { author, content } = req.body;
+    const specID = req.params.id;
+
+    const updatedSpec = await specsScheme.findByIdAndUpdate(
+      specID,
+      {
+        $push: { comments: { author, content } },
+      },
+      { new: true }
+    );
+console.log(updatedSpec);
+    res.json(updatedSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 
 
@@ -82,6 +102,7 @@ app.post("/specs", async (req, res) => {
       endDate: req.body.endDate,
       task: req.body.task,
       team: req.body.team,
+      comments: req.body.comments
     });
     let newSpec = await addSpecs.save();
     res.status(201).json(newSpec);
