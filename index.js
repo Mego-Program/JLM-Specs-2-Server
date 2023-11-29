@@ -1,38 +1,38 @@
-import express from 'express'
-import mongoose from 'mongoose'
-import specsScheme from './data/specsScheme.js'
-import cors from 'cors'
-import compression from 'compression'
-import helmet from 'helmet'
+import express from "express";
+import mongoose from "mongoose";
+import specsScheme from "./data/specsScheme.js";
+import cors from "cors";
+import compression from "compression";
+import helmet from "helmet";
 // import bunyan from 'bunyan'
 // import http from 'http'
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
-app.use(cors())
-app.options('*')
-app.use(compression())
+const app = express();
+app.use(cors());
+app.options("*");
+app.use(compression());
 app.use(helmet());
-app.use(express.json())
-const port = process.env.PORT
+app.use(express.json());
+const port = process.env.PORT;
 
-const mongoDBCode = process.env.MONGO_DB_URI
-mongoose.connect(mongoDBCode)
-const connentMongo = mongoose.connection
-connentMongo.on('error', (error) => console.log(error))
-connentMongo.once('open', () => console.log('connected to the database'))
+const mongoDBCode = process.env.MONGO_DB_URI;
+mongoose.connect(mongoDBCode);
+const connentMongo = mongoose.connection;
+connentMongo.on("error", (error) => console.log(error));
+connentMongo.once("open", () => console.log("connected to the database"));
 
 // get some data based on queries that you have - all the objects, but only one value from the schemes:
 app.get("/specs", async (req, res) => {
-    try {
-      const specs = await specsScheme.find({}, "title description date comments");
-      res.json(specs);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
+  try {
+    const specs = await specsScheme.find({}, "title description date");
+    res.json(specs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // get data of single spec by id
 app.get("/specs/:id", async (req, res) => {
@@ -56,15 +56,35 @@ app.post("/specs/:id/comments", async (req, res) => {
       },
       { new: true }
     );
-console.log(updatedSpec);
+    console.log(updatedSpec);
     res.json(updatedSpec);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+app.post("/specs/:id/comments/:commentId/replies", async (req, res) => {
+  try {
+    const { author, content } = req.body;
+    const specID = req.params.id;
+    const commentID = req.params.commentId;
 
+    const updatedSpec = await specsScheme.findByIdAndUpdate(
+      specID,
+      {
+        $push: { "comments.$[comment].replies": { author, content } },
+      },
+      {
+        new: true,
+        arrayFilters: [{ "comment._id": mongoose.Types.ObjectId(commentID) }],
+      }
+    );
 
+    res.json(updatedSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // remove spec by specific ID and read the spec in the console:
 app.delete("/specs/:id", async (req, res) => {
@@ -94,7 +114,7 @@ app.put("/specs/:id", async (req, res) => {
 // adding spec by post command:
 app.post("/specs", async (req, res) => {
   try {
-    console.log('enter server');
+    console.log("enter server");
     let addSpecs = new specsScheme({
       title: req.body.title,
       description: req.body.description,
@@ -102,11 +122,11 @@ app.post("/specs", async (req, res) => {
       endDate: req.body.endDate,
       task: req.body.task,
       team: req.body.team,
-      comments: req.body.comments
+      comments: req.body.comments,
     });
     let newSpec = await addSpecs.save();
     res.status(201).json(newSpec);
-    console.log('spec added: ',newSpec);
+    console.log("spec added: ", newSpec);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -119,33 +139,34 @@ app.post("/specs", async (req, res) => {
 //       res.status(500).json({ message: error.message });
 //     }
 //   });
-app.put('/spec/:id', async (req, res) => {
-    try {
-      const updatedSpec = await specsScheme.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      
-      const savedSpec = await updatedSpec.save();
-  
-      res.json(savedSpec);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
+app.put("/spec/:id", async (req, res) => {
+  try {
+    const updatedSpec = await specsScheme.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
-  app.delete('/specs/removeSpec/:id', async (req, res) => {
-    try {
-      const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
-      res.json(deleteSpec);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-  
-  
+    const savedSpec = await updatedSpec.save();
 
+    res.json(savedSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+app.delete("/specs/removeSpec/:id", async (req, res) => {
+  try {
+    const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
+    res.json(deleteSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // =================================================================
 
 app.listen(port, (err) => {
-    if (err) console.log(err);
-    console.log("Server listening");
+  if (err) console.log(err);
+  console.log("Server listening");
 });
