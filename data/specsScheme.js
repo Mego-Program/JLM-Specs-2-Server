@@ -19,7 +19,10 @@ let DataSpecSchema = new mongoose.Schema({
     date: {type: Date, default: Date().toLocaleString({timeZone: 'Asia/Jerusalem'})},
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
-    task: [Object],
+    task: {
+      projectName:String,
+      tasks: { type: [Object], default: [] }, 
+  },
     team: [String],
     comments: [
         {
