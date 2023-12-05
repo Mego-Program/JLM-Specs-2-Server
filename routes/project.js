@@ -5,6 +5,7 @@ import specsScheme from "../data/specsScheme.js";
 const projectRouter = express.Router();
 
 projectRouter.get("/boards", async (req, res) => {
+    console.log('test');
   try {
     const response = await axios.get(
       "https://project-jerusalem-2-server.vercel.app/projects/listOfProjects"
@@ -18,17 +19,21 @@ projectRouter.get("/boards", async (req, res) => {
 });
 
 projectRouter.put("/link-board", async (req, res) => {
-  try {
+    req.body.specId.map(async (item) =>  {
+        try {
     const updatedSpec = await specsScheme.findByIdAndUpdate(
-        req.body.specId,
-        { $set: { 'task.projectName': req.body.projectName } },
+        item,
+        { $set: { 'task.projectName': req.body.boardName } },
         { new: true }
+        
       );
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, item: item  });
   } catch (error) {
     console.error("Error:", error.message);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    res.status(500).json({ success: false, item: item, error: "Internal Server Error" });
   }
+    })
+  
 });
 
 projectRouter.get('/', async (req, res) => {
