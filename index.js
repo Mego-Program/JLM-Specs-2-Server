@@ -121,7 +121,6 @@ app.post("/specs/:id/comments", async (req, res) => {
   try {
     const { author, content, replyTo } = req.body;
     const specID = req.params.id;
-
     const commentId = new mongoose.Types.ObjectId();
 
     let updatedSpec;

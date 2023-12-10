@@ -1,16 +1,6 @@
 import { ObjectId } from 'mongodb'
 import mongoose from 'mongoose'
 
-// let DataSpecSchema = new mongoose.Schema({
-// title: {type: String, required: true},
-// description: String,
-// startDate: {type: Date, required: true}, 
-// endDate: {type: Date, required: true},
-// task: [String],
-// team: [ObjectId],
-// owner: ObjectId
-// })
-
 const commentSchema = new mongoose.Schema({
   commentId: { type: mongoose.Schema.Types.ObjectId, required: false },
   author: { type: String, required: true },
@@ -24,7 +14,10 @@ let DataSpecSchema = new mongoose.Schema({
   date: { type: Date, default: Date().toLocaleString({ timeZone: 'Asia/Jerusalem' }) },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
-  task: [Object],
+  task: {
+    projectName:String,
+    tasks: { type: [Object], default: [] },
+  },
   team: [String],
   comments: { type: Array, default: [] },
 
