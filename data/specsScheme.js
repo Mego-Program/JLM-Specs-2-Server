@@ -9,6 +9,7 @@ const commentSchema = new mongoose.Schema({
 });
 
 let DataSpecSchema = new mongoose.Schema({
+
   title: { type: String, required: true },
   description: String,
   date: { type: Date, default: Date().toLocaleString({ timeZone: 'Asia/Jerusalem' }) },
@@ -26,5 +27,6 @@ let DataSpecSchema = new mongoose.Schema({
 const specsScheme = mongoose.model("Specs", DataSpecSchema, "Specs");
 
 export default specsScheme;
+
 
 

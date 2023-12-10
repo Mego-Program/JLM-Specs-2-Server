@@ -4,25 +4,34 @@ import specsScheme from "./data/specsScheme.js";
 import cors from "cors";
 import compression from "compression";
 import helmet from "helmet";
-// import bunyan from 'bunyan'
-// import http from 'http'
 import dotenv from "dotenv";
+import projectRouter from "./routes/project.js";
 
 dotenv.config();
 
 const app = express();
+const port = process.env.PORT;
+
 app.use(cors());
 app.options("*");
 app.use(compression());
 app.use(helmet());
 app.use(express.json());
-const port = process.env.PORT;
+
+app.use('/project', projectRouter);
+
+
 
 const mongoDBCode = process.env.MONGO_DB_URI;
 mongoose.connect(mongoDBCode);
 const connectMongo = mongoose.connection;
 connectMongo.on("error", (error) => console.log(error));
 connectMongo.once("open", () => console.log("connected to the database"));
+
+
+
+
+
 
 // get some data based on queries that you have - all the objects, but only one value from the schemes:
 app.get("/specs", async (req, res) => {
@@ -58,7 +67,6 @@ app.delete("/specs/:id", async (req, res) => {
 // update spec by specific ID and read the spec in the console:
 app.put("/specs/:id", async (req, res) => {
   try {
-    console.log(req.body);
     const editSpec = await specsScheme.findByIdAndUpdate(
       req.params.id,
       req.body
@@ -83,7 +91,19 @@ app.post("/specs", async (req, res) => {
       team: req.body.team,
       comments: req.body.comments,
     });
+   
     let newSpec = await addSpecs.save();
+
+    // send board and task to project
+    if (newSpec.task.projectName !== ''){
+      const list = newSpec.task.tasks.filter(item => item.sendToBoard !== false);
+      const object = {
+        boardName: newSpec.task.projectName,
+        taskList: list
+      }
+      // const response = await axios.post('',object);
+      //add feild
+    }
     res.status(201).json(newSpec);
     console.log("spec added: ", newSpec);
   } catch (error) {
@@ -116,6 +136,7 @@ app.delete("/specs/removeSpec/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 app.post("/specs/:id/comments", async (req, res) => {
   try {
