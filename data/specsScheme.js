@@ -15,7 +15,8 @@ import mongoose from 'mongoose'
 
 let DataSpecSchema = new mongoose.Schema({
     title: {type: String, required: true},
-    description: Object,
+    description: String,
+    content:{type:Object, required:true},
     date: {type: Date, default: Date().toLocaleString({timeZone: 'Asia/Jerusalem'})},
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
