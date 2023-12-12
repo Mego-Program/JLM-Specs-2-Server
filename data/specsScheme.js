@@ -11,13 +11,14 @@ const commentSchema = new mongoose.Schema({
 let DataSpecSchema = new mongoose.Schema({
 
   title: { type: String, required: true },
-  description: String,
+  description: Object,
   date: { type: Date, default: Date().toLocaleString({ timeZone: 'Asia/Jerusalem' }) },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   task: {
     projectName:String,
     tasks: { type: [Object], default: [] },
+
   },
   team: [String],
   comments: { type: Array, default: [] },

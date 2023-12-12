@@ -6,6 +6,7 @@ import compression from "compression";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import projectRouter from "./routes/project.js";
+import axios from "axios";
 
 dotenv.config();
 
@@ -80,8 +81,8 @@ app.put("/specs/:id", async (req, res) => {
 
 // adding spec by post command:
 app.post("/specs", async (req, res) => {
+  console.log("enter server");
   try {
-    console.log("enter server");
     let addSpecs = new specsScheme({
       title: req.body.title,
       description: req.body.description,
@@ -96,12 +97,33 @@ app.post("/specs", async (req, res) => {
 
     // send board and task to project
     if (newSpec.task.projectName !== ''){
-      const list = newSpec.task.tasks.filter(item => item.sendToBoard !== false);
-      const object = {
+      const list = newSpec.task.tasks.filter(item => item.sendToBoard === true);
+      const spec = {title:newSpec.title, id:newSpec._id}
+
+      const connectBoard = {
         boardName: newSpec.task.projectName,
-        taskList: list
+        spec:spec,
+        tasks:list,
+        newSpec:true
       }
-      // const response = await axios.post('',object);
+      console.log('test:',connectBoard);
+      try{
+          const response = await axios.put('https://project-jerusalem-2-server.vercel.app/spec/connectSpecs',connectBoard);
+          console.log('response project: ',response.data);
+      }catch (error){
+        console.log('error project: ',error.data);
+        const newList = newSpec.task.tasks.map(item => ({ ...item, sendToBoard: false }))
+        const object = {projectName:'', tasks:newList}
+        const updatedSpec = await specsScheme.findByIdAndUpdate(
+          newSpec._id,
+          { $set: { 'task': object} },
+          { new: true }
+        );
+      }
+
+      
+
+      
       //add feild
     }
     res.status(201).json(newSpec);
