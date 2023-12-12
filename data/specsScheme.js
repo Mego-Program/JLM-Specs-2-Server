@@ -1,15 +1,12 @@
 import { ObjectId } from 'mongodb'
 import mongoose from 'mongoose'
 
-// let DataSpecSchema = new mongoose.Schema({
-// title: {type: String, required: true},
-// description: String,
-// startDate: {type: Date, required: true}, 
-// endDate: {type: Date, required: true},
-// task: [String],
-// team: [ObjectId],
-// owner: ObjectId
-// })
+const commentSchema = new mongoose.Schema({
+  commentId: { type: mongoose.Schema.Types.ObjectId, required: false },
+  author: { type: String, required: true },
+  content: { type: String, required: true },
+  date: { type: Date, default: Date.now },
+});
 
 
 
@@ -17,26 +14,21 @@ let DataSpecSchema = new mongoose.Schema({
     title: {type: String, required: true},
     description: String,
     content:{type:Object, required:true},
-    date: {type: Date, default: Date().toLocaleString({timeZone: 'Asia/Jerusalem'})},
+    date: {type: Date, default: new Date().toLocaleString({timeZone: 'Asia/Jerusalem'})},
     startDate: {type: Date, required: true}, 
     endDate: {type: Date, required: true},
     task: {
       projectName:String,
       tasks: { type: [Object], default: [] }, 
   },
-    team: [String],
-    comments: [
-        {
-          author: String,
-          content: String,
-        },
-      ],
-    });
+  team: [String],
+  comments: { type: Array, default: [] },
 
-    // check how to change the hour to Jerusalem-time 
+});
 
-const specsScheme = mongoose.model("Specs", DataSpecSchema, "Specs")
+const specsScheme = mongoose.model("Specs", DataSpecSchema, "Specs");
 
-export default specsScheme
+export default specsScheme;
+
 
 
