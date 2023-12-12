@@ -109,6 +109,26 @@ app.post('/specs/addSpec', async (req, res) => {
     }
 })
 
+app.post("/specs/:specId/comments/:commentId/replies", async (req, res) => {
+    try {
+      const { author, content } = req.body;
+      const { specId, commentId } = req.params;
+  
+      const updatedSpec = await specsScheme.findOneAndUpdate(
+        { _id: specId, "comments._id": commentId },
+        {
+          $push: { "comments.$.replies": { author, content } },
+        },
+        { new: true }
+      );
+  
+      res.json(updatedSpec.comments);
+    } catch (error) {
+      console.error("Error when adding reply:", error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
 
 // =================================================================
 
