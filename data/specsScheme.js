@@ -22,7 +22,7 @@ let DataSpecSchema = new mongoose.Schema({
       tasks: { type: [Object], default: [] }, 
   },
   team: [String],
-  comments: { type: Object, default: [] },
+  comments: { type: Array, default: [] },
 
 });
 
