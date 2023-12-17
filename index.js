@@ -6,6 +6,7 @@ import compression from "compression";
 import helmet from "helmet";
 import dotenv from "dotenv";
 import projectRouter from "./routes/project.js";
+import teamsUsersRouter from "./routes/teamsUsers.js";
 import axios from "axios";
 
 dotenv.config();
@@ -20,8 +21,8 @@ app.use(helmet());
 app.use(express.json());
 
 app.use('/project', projectRouter);
-
-
+app.use('/teams', teamsUsersRouter);
+// app.use('/specs', specsRouter)
 
 
 const mongoDBCode = process.env.MONGO_DB_URI;
