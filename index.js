@@ -82,6 +82,7 @@ app.post("/specs", async (req, res) => {
     let addSpecs = new specsScheme({
       title: req.body.title,
       description: req.body.description,
+      content:req.body.content,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
       task: req.body.task,
@@ -102,7 +103,6 @@ app.post("/specs", async (req, res) => {
         tasks:list,
         newSpec:true
       }
-      console.log('test:',connectBoard);
       try{
           const response = await axios.put('https://project-jerusalem-2-server.vercel.app/spec/connectSpecs',connectBoard);
           console.log('response project: ',response.data);
