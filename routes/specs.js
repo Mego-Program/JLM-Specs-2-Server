@@ -38,20 +38,23 @@ specsRouter.post("/", async (req, res) => {
         team: req.body.team,
         comments: req.body.comments,
       });
+
+  
      
       let newSpec = await addSpecs.save();
+
   
       // send board and task to project
       if (newSpec.task.projectName !== ''){
         const list = newSpec.task.tasks.filter(item => item.sendToBoard === true);
         const spec = {title:newSpec.title, id:newSpec._id}
-  
         const connectBoard = {
           boardName: newSpec.task.projectName,
           spec:spec,
           tasks:list,
           newSpec:true
         }
+
         try{
             const response = await axios.put('https://project-jerusalem-2-server.vercel.app/spec/connectSpecs',connectBoard);
             console.log('response project: ',response.data);

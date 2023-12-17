@@ -2,8 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import specsScheme from "./data/specsScheme.js";
 import cors from "cors";
-import compression from "compression";
-import helmet from "helmet";
+// import compression from "compression";
+// import helmet from "helmet";
 import dotenv from "dotenv";
 import projectRouter from "./routes/project.js";
 import teamsUsersRouter from "./routes/teamsUsers.js";
@@ -15,21 +15,23 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
+const mongoDBCode = process.env.MONGO_DB_URI;
+mongoose.connect(mongoDBCode);
+const connectMongo = mongoose.connection;
+connectMongo.on("error", (error) => console.log(error));
+connectMongo.once("open", () => console.log("connected to the database"));
+
 app.use(cors());
 app.options("*");
-app.use(compression());
-app.use(helmet());
+// app.use(compression());
+// app.use(helmet());
 app.use(express.json());
 
 app.use('/project', projectRouter);
 app.use('/teams', teamsUsersRouter);
 app.use('/specs', specsRouter)
 
-const mongoDBCode = process.env.MONGO_DB_URI;
-mongoose.connect(mongoDBCode);
-const connectMongo = mongoose.connection;
-connectMongo.on("error", (error) => console.log(error));
-connectMongo.once("open", () => console.log("connected to the database"));
+
 
 
 
