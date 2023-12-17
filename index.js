@@ -23,6 +23,7 @@ app.use('/project', projectRouter);
 
 
 
+
 const mongoDBCode = process.env.MONGO_DB_URI;
 mongoose.connect(mongoDBCode);
 const connectMongo = mongoose.connection;
@@ -144,7 +145,7 @@ app.put("/spec/:id", async (req, res) => {
   }
 });
 
-
+<<<<<<<<< Temporary merge branch 1
 // app.delete("/specs/removeSpec/:id", async (req, res) => {
 //   try {
 //     const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
@@ -153,6 +154,17 @@ app.put("/spec/:id", async (req, res) => {
 //     res.status(500).json({ message: error.message });
 //   }
 // });
+=========
+
+app.delete("/specs/removeSpec/:id", async (req, res) => {
+  try {
+    const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
+    res.json(deleteSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+>>>>>>>>> Temporary merge branch 2
 
 app.post("/specs/:id/comments", async (req, res) => {
   try {

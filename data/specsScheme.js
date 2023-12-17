@@ -34,3 +34,4 @@ const specsScheme = mongoose.model("Specs", DataSpecSchema, "Specs");
 export default specsScheme;
 
 
+
