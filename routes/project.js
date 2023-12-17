@@ -15,7 +15,6 @@ projectRouter.get('/', async (req, res) => {
 })
 
 projectRouter.get("/boards", async (req, res) => {
-    console.log('test');
   try {
     const response = await axios.get(
       "https://project-jerusalem-2-server.vercel.app/spec/listOfProjects"
@@ -45,6 +44,18 @@ projectRouter.put("/link-board", async (req, res) => {
     })
   
 });
+
+projectRouter.put('/connect-board', async (req,res) => {
+  console.log('enter connect-board');
+  try{
+    const response = await axios.put('https://project-jerusalem-2-server.vercel.app/spec/connectSpecs', req.body);
+    console.log('response project: ',response.data);
+    res.status(200).json({success:true, response:response})
+  }catch (error){
+    console.error("Error:", error.message);
+    res.status(400).json({ success: false, error: "Internal Server Error" });
+  }
+})
 
 projectRouter.put('/add-task', async (req,res) => {
     try{
