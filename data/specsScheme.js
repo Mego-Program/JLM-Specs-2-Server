@@ -8,17 +8,18 @@ const commentSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
 });
 
+
+
 let DataSpecSchema = new mongoose.Schema({
-
-  title: { type: String, required: true },
-  description: Object,
-  date: { type: Date, default: Date().toLocaleString({ timeZone: 'Asia/Jerusalem' }) },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  task: {
-    projectName:String,
-    tasks: { type: [Object], default: [] },
-
+    title: {type: String, required: true},
+    description: String,
+    content:{type:Object, required:true},
+    date: {type: Date, default: new Date().toLocaleString({timeZone: 'Asia/Jerusalem'})},
+    startDate: {type: Date, required: true}, 
+    endDate: {type: Date, required: true},
+    task: {
+      projectName:String,
+      tasks: { type: [Object], default: [] }, 
   },
   team: [String],
   comments: { type: Array, default: [] },
