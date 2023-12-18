@@ -4,7 +4,7 @@ import specsScheme from '../data/specsScheme.js';
 
 const commentsRouter = express.Router();
 
-commentsRouter.post('/:id/comments', async (req, res) => {
+commentsRouter.post('/:id', async (req, res) => {
   try {
     const { author, content, replyTo } = req.body;
     const specID = req.params.id;
@@ -52,7 +52,7 @@ commentsRouter.post('/:id/comments', async (req, res) => {
   }
 });
 
-commentsRouter.post('/:id/comments/:commentId/replies', async (req, res) => {
+commentsRouter.post('/:id/:commentId/replies', async (req, res) => {
   try {
     const { author, content } = req.body;
     const specID = req.params.id;
@@ -84,7 +84,7 @@ commentsRouter.post('/:id/comments/:commentId/replies', async (req, res) => {
   }
 });
 
-commentsRouter.get('/:id/comments', async (req, res) => {
+commentsRouter.get('/:id', async (req, res) => {
   try {
     const specID = req.params.id;
     const spec = await specsScheme.findById(specID);

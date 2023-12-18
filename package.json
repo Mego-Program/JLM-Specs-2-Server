@@ -23,7 +23,7 @@
     "http": "^0.0.1-security",
     "mongodb": "^6.2.0",
     "mongoose": "^8.0.0",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "vercel": "^32.5.5"
   }
 }

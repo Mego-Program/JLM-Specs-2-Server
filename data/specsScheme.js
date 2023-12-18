@@ -15,15 +15,15 @@ const commentSchema = new mongoose.Schema({
 });
 
 let DataSpecSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: String,
-  content: { type: Object, required: true },
-  date: { type: Date, default: new Date().toLocaleString({ timeZone: 'Asia/Jerusalem' }) },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date, required: true },
-  task: {
-    projectName: String,
-    tasks: { type: [Object], default: [] },
+    title: {type: String, required: true},
+    description: String,
+    content:{type:Object, required:true},
+    date: {type: Date, default: new Date()},
+    startDate: {type: Date, required: true}, 
+    endDate: {type: Date, required: true},
+    task: {
+      projectName:String,
+      tasks: { type: [Object], default: [] }, 
   },
   team: [String],
   comments: [commentSchema],
