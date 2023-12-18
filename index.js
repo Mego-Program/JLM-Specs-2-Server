@@ -2,11 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import specsScheme from "./data/specsScheme.js";
 import cors from "cors";
-// import compression from "compression";
-// import helmet from "helmet";
 import dotenv from "dotenv";
 import projectRouter from "./routes/project.js";
-import teamsUsersRouter from "./routes/teamsUsers.js";
+import teamsUsersRouter from "./routes/team.js";
 import specsRouter from "./routes/specs.js";
 import axios from "axios";
 
@@ -23,12 +21,10 @@ connectMongo.once("open", () => console.log("connected to the database"));
 
 app.use(cors());
 app.options("*");
-// app.use(compression());
-// app.use(helmet());
 app.use(express.json());
 
 app.use('/project', projectRouter);
-app.use('/teams', teamsUsersRouter);
+app.use('/team', teamsUsersRouter);
 app.use('/specs', specsRouter)
 
 
@@ -129,30 +125,6 @@ app.post("/specs/:id/comments/:commentId/replies", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
-
-
-// app.put("/spec/:id", async (req, res) => {
-//   try {
-//     const updatedSpec = await specsScheme.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true }
-//     );
-
-//     const savedSpec = await updatedSpec.save();
-
-//     res.json(savedSpec);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-
-
-
-
-
 
 
 
