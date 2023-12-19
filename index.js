@@ -2,12 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import specsScheme from "./data/specsScheme.js";
 import cors from "cors";
-// import compression from "compression";
-// import helmet from "helmet";
 import dotenv from "dotenv";
 import projectRouter from "./routes/project.js";
 import teamsUsersRouter from "./routes/teamsUsers.js";
 import specsRouter from "./routes/specs.js";
+import commentsRouter from "./routes/comments.js"; 
 import axios from "axios";
 
 dotenv.config();
@@ -23,14 +22,12 @@ connectMongo.once("open", () => console.log("connected to the database"));
 
 app.use(cors());
 app.options("*");
-// app.use(compression());
-// app.use(helmet());
 app.use(express.json());
 
 app.use('/project', projectRouter);
 app.use('/teams', teamsUsersRouter);
-app.use('/specs', specsRouter)
-
+app.use('/specs', specsRouter);
+app.use('/comments', commentsRouter);
 
 
 
@@ -44,9 +41,25 @@ app.use('/specs', specsRouter)
 
 app.get("/specs/:id/comments", async (req, res) => {
   try {
-    const specID = req.params.id;
-    const spec = await specsScheme.findById(specID);
-    res.json(spec.comments);
+    const updatedSpec = await specsScheme.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    const savedSpec = await updatedSpec.save();
+
+    res.json(savedSpec);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+app.delete("/specs/removeSpec/:id", async (req, res) => {
+  try {
+    const deleteSpec = await specsScheme.findByIdAndDelete(req.params.id);
+    res.json(deleteSpec);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -130,31 +143,15 @@ app.post("/specs/:id/comments/:commentId/replies", async (req, res) => {
   }
 });
 
-
-
-// app.put("/spec/:id", async (req, res) => {
-//   try {
-//     const updatedSpec = await specsScheme.findByIdAndUpdate(
-//       req.params.id,
-//       req.body,
-//       { new: true }
-//     );
-
-//     const savedSpec = await updatedSpec.save();
-
-//     res.json(savedSpec);
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// });
-
-
-
-
-
-
-
-
+app.get("/specs/:id/comments", async (req, res) => {
+  try {
+    const specID = req.params.id;
+    const spec = await specsScheme.findById(specID);
+    res.json(spec.comments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // =================================================================
 
