@@ -30,9 +30,7 @@ projectRouter.put("/link-board", async (req, res) => {
   req.body.specId.map(async (item) => {
     
     try {
-      const updatedSpec = await specsScheme.findById(item)
-      if (updatedSpec.task.projectName !== '') {res.status(403).send('spec already connected to board'); return}
-      await updatedSpec.updateOne(
+      const updatedSpec = await specsScheme.findByIdAndUpdate(
         item,
         { $set: { "task.projectName": req.body.boardName } },
         { new: true }
@@ -52,14 +50,13 @@ projectRouter.put("/connect-board/:board", async (req, res) => {
   const del = { boardName: req.params.board, specId: spec.id };
   try {
     if (req.params.board !== "null") {
-      console.log("a");
       const delRes = await axios.delete(
         "https://project-jerusalem-2-server.vercel.app/spec",
-        { del }
+        {data:del}
       );
       console.log("response project: ", delRes.data);
     }
-    if (boardName == "") {
+    if (boardName !== "") {
       const response = await axios.put(
         "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
         req.body

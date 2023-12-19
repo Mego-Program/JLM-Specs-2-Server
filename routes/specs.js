@@ -59,7 +59,7 @@ specsRouter.post("/", async (req, res) => {
             const response = await axios.put('https://project-jerusalem-2-server.vercel.app/spec/connectSpecs',connectBoard);
             console.log('response project: ',response.data);
         }catch (error){
-          console.log('error project: ',error.data);
+          console.log('error project: ',error);
           const newList = newSpec.task.tasks.map(item => ({ ...item, sendToBoard: false }))
           const object = {projectName:'', tasks:newList}
           const updatedSpec = await specsScheme.findByIdAndUpdate(
