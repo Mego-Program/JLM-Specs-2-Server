@@ -46,9 +46,7 @@ specsRouter.post("/", async (req, res) => {
   
       // send board and task to project
       if (newSpec.task.projectName !== ''){
-        console.log('original: ',newSpec.task.tasks);
         const list = newSpec.task.tasks.filter(item => item.sendToBoard === true);
-        console.log('new: ', list);
         const spec = {title:newSpec.title, id:newSpec._id}
         const connectBoard = {
           boardName: newSpec.task.projectName,

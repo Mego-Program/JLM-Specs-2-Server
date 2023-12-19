@@ -50,7 +50,6 @@ projectRouter.put("/connect-board/:board", async (req, res) => {
   const del = { boardName: req.params.board, specId: spec.id };
   try {
     if (req.params.board !== "null") {
-      console.log('del: ',del);
       const delRes = await axios.delete(
         "https://project-jerusalem-2-server.vercel.app/spec",
         {data:del}
@@ -58,7 +57,6 @@ projectRouter.put("/connect-board/:board", async (req, res) => {
       console.log("response project: ", delRes.data);
     }
     if (boardName !== "") {
-      console.log('body: ',req.body);
       const response = await axios.put(
         "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
         req.body
