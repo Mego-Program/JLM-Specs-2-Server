@@ -44,14 +44,23 @@ projectRouter.put("/link-board", async (req, res) => {
   });
 });
 
-projectRouter.put("/connect-board", async (req, res) => {
-  console.log("enter connect-board");
+
+projectRouter.put("/connect-board/:board", async (req, res) => {
+  const { spec, boardName, tasks, newTask } = req.body;
+  const del = { boardName: req.params.board, specId: spec.id };
+
   try {
+    const delRes = await axios.delete(
+      "https://project-jerusalem-2-server.vercel.app/specs",
+      { del }
+    );
+    console.log("response project: ", delRes.data);
     const response = await axios.put(
       "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
       req.body
     );
     console.log("response project: ", response.data);
+
     res.sendStatus(200);
   } catch (error) {
     console.error("Error:", error.message);
