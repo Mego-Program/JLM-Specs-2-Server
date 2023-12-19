@@ -6,7 +6,7 @@ const projectRouter = express.Router();
 
 projectRouter.get("/", async (req, res) => {
   try {
-    const specs = await specsScheme.find({}, "title");
+    const specs = await specsScheme.find({'task.projectName':''}, "title");
     res.json(specs);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -28,8 +28,11 @@ projectRouter.get("/boards", async (req, res) => {
 
 projectRouter.put("/link-board", async (req, res) => {
   req.body.specId.map(async (item) => {
+    
     try {
-      const updatedSpec = await specsScheme.findByIdAndUpdate(
+      const updatedSpec = await specsScheme.findById(item)
+      if (updatedSpec.task.projectName !== '') {res.status(403).send('spec already connected to board'); return}
+      await updatedSpec.updateOne(
         item,
         { $set: { "task.projectName": req.body.boardName } },
         { new: true }
@@ -44,22 +47,25 @@ projectRouter.put("/link-board", async (req, res) => {
   });
 });
 
-
 projectRouter.put("/connect-board/:board", async (req, res) => {
   const { spec, boardName, tasks, newTask } = req.body;
   const del = { boardName: req.params.board, specId: spec.id };
-
   try {
-    const delRes = await axios.delete(
-      "https://project-jerusalem-2-server.vercel.app/specs",
-      { del }
-    );
-    console.log("response project: ", delRes.data);
-    const response = await axios.put(
-      "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
-      req.body
-    );
-    console.log("response project: ", response.data);
+    if (req.params.board !== "null") {
+      console.log("a");
+      const delRes = await axios.delete(
+        "https://project-jerusalem-2-server.vercel.app/spec",
+        { del }
+      );
+      console.log("response project: ", delRes.data);
+    }
+    if (boardName == "") {
+      const response = await axios.put(
+        "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
+        req.body
+      );
+      console.log("response project: ", response.data);
+    }
 
     res.sendStatus(200);
   } catch (error) {
