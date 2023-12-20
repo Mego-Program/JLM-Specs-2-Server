@@ -7,7 +7,7 @@ const specsRouter = express.Router();
 // get some data based on queries that you have - all the objects, but only one value from the schemes:
 specsRouter.get("/", async (req, res) => {
     try {
-      const specs = await specsScheme.find({}, "title description date");
+      const specs = await specsScheme.find({}, "title description date team");
       res.json(specs);
     } catch (error) {
       res.status(500).json({ message: error.message });
