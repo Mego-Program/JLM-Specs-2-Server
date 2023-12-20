@@ -25,7 +25,7 @@ let DataSpecSchema = new mongoose.Schema({
       projectName:String,
       tasks: { type: [Object], default: [] }, 
   },
-  team: [String],
+  team: [Object],
   comments: [commentSchema],
 });
 
