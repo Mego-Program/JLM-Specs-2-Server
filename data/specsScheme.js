@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongodb'
-import mongoose from 'mongoose'
+import { ObjectId } from "mongodb";
+import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema({
   author: { type: Object, required: true },
@@ -15,15 +15,16 @@ const commentSchema = new mongoose.Schema({
 });
 
 let DataSpecSchema = new mongoose.Schema({
-    title: {type: String, required: true},
-    description: String,
-    content:{type:Object, required:true},
-    date: {type: Date, default: new Date()},
-    startDate: {type: Date, required: true}, 
-    endDate: {type: Date, required: true},
-    task: {
-      projectName:String,
-      tasks: { type: [Object], default: [] }, 
+  author: { type: Object, required: true },
+  title: { type: String, required: true },
+  description: String,
+  content: { type: Object, required: true },
+  date: { type: Date, default: new Date() },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
+  task: {
+    projectName: String,
+    tasks: { type: [Object], default: [] },
   },
   team: [Object],
   comments: [commentSchema],

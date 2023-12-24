@@ -29,6 +29,7 @@ specsRouter.post("/", async (req, res) => {
   console.log("enter server");
   try {
     let addSpecs = new specsScheme({
+      author: req.body.author,
       title: req.body.title,
       description: req.body.description,
       content: req.body.content,
