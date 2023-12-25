@@ -68,7 +68,7 @@ specsRouter.post("/", async (req, res) => {
           ...item,
           sendToBoard: false,
         }));
-        const object = { projectName: "", tasks: newList };
+        const object = { projectName: null, tasks: newList };
         console.log('error to send to board and fix spec (specs post): ', object);
         const updatedSpec = await specsScheme.findByIdAndUpdate(
           newSpec._id,
