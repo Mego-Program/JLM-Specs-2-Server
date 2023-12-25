@@ -7,7 +7,7 @@ const specsRouter = express.Router();
 // get some data based on queries that you have - all the objects, but only one value from the schemes:
 specsRouter.get("/", async (req, res) => {
   try {
-    const specs = await specsScheme.find({}, "title description date team");
+    const specs = await specsScheme.find({}, "title description date team.img author._id");
     res.json(specs);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -26,7 +26,7 @@ specsRouter.get("/:id", async (req, res) => {
 
 // adding spec by post command:
 specsRouter.post("/", async (req, res) => {
-  console.log("enter server");
+  console.log("enter server (specs post)");
   try {
     let addSpecs = new specsScheme({
       author: req.body.author,
@@ -43,7 +43,8 @@ specsRouter.post("/", async (req, res) => {
     let newSpec = await addSpecs.save();
 
     // send board and task to project
-    if (newSpec.task.projectName !== "") {
+    if (newSpec.task.projectName !== null) {
+      console.log('projectName not null (specs post');
       const list = newSpec.task.tasks.filter(
         (item) => item.sendToBoard === true
       );
@@ -54,20 +55,21 @@ specsRouter.post("/", async (req, res) => {
         tasks: list,
         newSpec: true,
       };
-
+      console.log('send to board: (specs post): ',connectBoard);
       try {
         const response = await axios.put(
           "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
           connectBoard
         );
-        console.log("response project: ", response.data);
+        console.log("response project (specs post): ", response.data);
       } catch (error) {
-        console.log("error project: ", error);
+        console.log("error project (specs post): ", error);
         const newList = newSpec.task.tasks.map((item) => ({
           ...item,
           sendToBoard: false,
         }));
         const object = { projectName: "", tasks: newList };
+        console.log('error to send to board and fix spec (specs post): ', object);
         const updatedSpec = await specsScheme.findByIdAndUpdate(
           newSpec._id,
           { $set: { task: object } },
@@ -76,7 +78,7 @@ specsRouter.post("/", async (req, res) => {
       }
     }
     res.status(201).json(newSpec);
-    console.log("spec added: ", newSpec);
+    console.log("spec added (specs post): ", newSpec);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -86,7 +88,7 @@ specsRouter.post("/", async (req, res) => {
 specsRouter.delete("/:id", async (req, res) => {
   try {
     const spec = await specsScheme.findById(req.params.id);
-    if (spec.task.projectName !== "") {
+    if (spec.task.projectName !== null) {
       const del = { boardName: spec.task.projectName, specId: spec._id };
       const delRes = await axios.delete(
         "https://project-jerusalem-2-server.vercel.app/spec",
