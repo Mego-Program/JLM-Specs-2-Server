@@ -29,12 +29,27 @@ projectRouter.get("/boards", async (req, res) => {
 projectRouter.put("/link-board", async (req, res) => {
   req.body.specId.map(async (item) => {
     try {
-      const updatedSpec = await specsScheme.findByIdAndUpdate(
-        item,
-        { $set: { "task.projectName": req.body.boardName } },
-        { new: true }
-      );
-      res.status(200).json({ success: true, item: updatedSpec });
+      if (req.body.boardName !== null) {
+        const updatedSpec = await specsScheme.findByIdAndUpdate(
+          item,
+          { $set: { "task.projectName": req.body.boardName } },
+          { new: true }
+        );
+        res.status(200).json({ success: true, item: updatedSpec });
+      }else{
+        const spec = await specsScheme.findById(item)
+        const newList = spec.task.tasks.map((item) => ({
+          ...item,
+          sendToBoard: false,
+        }));
+        const object = { projectName: null, tasks: newList };
+        const updatedSpec = await specsScheme.findByIdAndUpdate(
+          item,
+          { $set: { task: object } },
+          { new: true }
+        );
+        res.status(200).json({ success: true, item: updatedSpec });
+      }
     } catch (error) {
       console.error("Error:", error.message);
       res
@@ -43,45 +58,6 @@ projectRouter.put("/link-board", async (req, res) => {
     }
   });
 });
-
-projectRouter.put("/unlink-board/", async (req, res) => {
-  try {
-    // Ensure req.body is an array of specIds
-    const specIds = Array.isArray(req.body) ? req.body : [req.body];
-
-    // Use Promise.all to wait for all updates to complete
-    await Promise.all(specIds.map(async (specId) => {
-      const spec = await specsScheme.findById(specId);
-
-      if (spec) {
-        // Update tasks to set sendToBoard to false
-        const newList = spec.task.tasks.map((item) => ({
-          ...item,
-          sendToBoard: false,
-        }));
-
-        // Update the spec with the new project name and task list
-        await specsScheme.findByIdAndUpdate(
-          specId,
-          {
-            $set: {
-              'task.projectName': '',
-              'task.tasks': newList,
-            },
-          },
-          { new: true }
-        );
-      }
-    }));
-
-    res.status(200).json({ success: true, message: "Specs updated successfully" });
-  } catch (error) {
-    console.error("Error updating specs:", error.message);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
-  }
-});
-
-
 
 projectRouter.put("/connect-board/:board", async (req, res) => {
   const { spec, boardName, tasks, newTask } = req.body;
@@ -95,6 +71,7 @@ projectRouter.put("/connect-board/:board", async (req, res) => {
       console.log("response project: ", delRes.data);
     }
     if (boardName !== "") {
+
       const response = await axios.put(
         "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
         req.body
@@ -115,6 +92,7 @@ projectRouter.put("/add-task", async (req, res) => {
       "https://project-jerusalem-2-server.vercel.app/spec/connectSpecs",
       req.body
     );
+    console.log('add task: ',req.body);
     res.sendStatus(200);
   } catch (error) {
     console.log("error: ", error);
