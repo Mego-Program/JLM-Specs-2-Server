@@ -6,7 +6,7 @@ const projectRouter = express.Router();
 
 projectRouter.get("/", async (req, res) => {
   try {
-    const specs = await specsScheme.find({ "task.projectName": "" }, "title");
+    const specs = await specsScheme.find({ "task.projectName": null }, "title");
     res.json(specs);
   } catch (error) {
     res.status(400).json({ message: error.message });
