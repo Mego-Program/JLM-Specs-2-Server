@@ -14,7 +14,6 @@ projectRouter.get("/", async (req, res) => {
 });
 
 projectRouter.get("/boards/:userName", async (req, res) => {
-  console.log(req.params.userName);
   try {
     const response = await axios.post(
       "https://project-jerusalem-2-server.vercel.app/projects/listofprojects",
