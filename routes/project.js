@@ -6,17 +6,20 @@ const projectRouter = express.Router();
 
 projectRouter.get("/", async (req, res) => {
   try {
-    const specs = await specsScheme.find({ "task.projectName": "" }, "title");
+    const specs = await specsScheme.find({ "task.projectName": null }, "title");
     res.json(specs);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-projectRouter.get("/boards", async (req, res) => {
+projectRouter.get("/boards/:userName", async (req, res) => {
   try {
-    const response = await axios.get(
-      "https://project-jerusalem-2-server.vercel.app/spec/listOfProjects"
+    const response = await axios.post(
+      "https://project-jerusalem-2-server.vercel.app/projects/listofprojects",
+      {
+        userName: req.params.userName
+      }
     );
     const data = response.data;
     res.json(data);
